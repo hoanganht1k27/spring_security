@@ -1,18 +1,14 @@
 package com.hoanganht1k27.springsecuritybasic.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Entity
-@Table(name = "customer")
+@Table(name = "cart")
 @Data
-public class Customer {
+public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -29,7 +25,6 @@ public class Customer {
     @Column
     private String role;
 
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("customer")
-    private List<Authority> authorities;
+    @OneToMany(mappedBy = "cart")
+    private List<Item> items;
 }
