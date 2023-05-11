@@ -1,5 +1,7 @@
 package com.hoanganht1k27.springsecuritybasic.config;
 
+import com.hoanganht1k27.springsecuritybasic.filter.AuthoritiesLoggingAfterFilter;
+import com.hoanganht1k27.springsecuritybasic.filter.RequestValidationBeforeFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ProviderManager;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.sql.DataSource;
 
@@ -22,9 +25,9 @@ public class ProjectSecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
+                .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests()
-//                .requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")
-//                .requestMatchers("/myBalance").hasAuthority("VIEWBALANCE")
                 .requestMatchers("/myAccount").hasRole("USER")
                 .requestMatchers("/myBalance").hasRole("ADMIN")
                         .requestMatchers("/notices", "/contact", "/register").permitAll()
