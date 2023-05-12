@@ -1,12 +1,14 @@
 package com.hoanganht1k27.springsecuritybasic.config;
 
 import com.hoanganht1k27.springsecuritybasic.filter.AuthoritiesLoggingAfterFilter;
+import com.hoanganht1k27.springsecuritybasic.filter.JwtTokenGeneratorFilter;
 import com.hoanganht1k27.springsecuritybasic.filter.RequestValidationBeforeFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,9 +26,12 @@ import javax.sql.DataSource;
 public class ProjectSecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .csrf().disable()
+//                .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+//                .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
+//                .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests()
                 .requestMatchers("/myAccount").hasRole("USER")
                 .requestMatchers("/myBalance").hasRole("ADMIN")
