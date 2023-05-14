@@ -23,10 +23,18 @@ import java.util.Set;
 
 public class JwtTokenGeneratorFilter extends OncePerRequestFilter {
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return !request.getServletPath().equals("/user");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (null != authentication) {
-            SecretKey key = Keys.hmacShaKeyFor(SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
+            byte[] keyBytes = new byte[32]; // 32 bytes for 256 bits
+            byte[] sourceBytes = SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8);
+            System.arraycopy(sourceBytes, 0, keyBytes, 0, Math.min(sourceBytes.length, keyBytes.length));
+            SecretKey key = Keys.hmacShaKeyFor(keyBytes);
             String jwt = Jwts.builder().setIssuer("hoanganht1k27").setSubject("JWT Token")
                     .claim("username", authentication.getName())
                     .claim("authorities", populateAuthorities(authentication.getAuthorities()))
